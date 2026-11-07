@@ -4,7 +4,6 @@ on:
   push:
     branches: [main]
   schedule:
-    # Chaque lundi : récupère les nouvelles cartes, scripts et banlists de Project Ignis.
     - cron: "0 5 * * 1"
   workflow_dispatch:
 
@@ -31,7 +30,9 @@ jobs:
           dotnet-version: 8.0.x
       - run: npm ci
       - run: npm run data
-      # WindBot (C#) compilé en WebAssembly, servi dans public/windbot
+      - name: Traduction française des cartes
+        run: node scripts/translate-cards.mjs || echo "Traduction ignorée (API indisponible)"
+      - run: rm -f public/data/cards.en.json
       - run: npm run windbot
       - run: npm run lint
       - run: npm run build
